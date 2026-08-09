@@ -51,7 +51,21 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  Admin: 'Admin',
+  User: 'User',
+  SingleSavings: 'SingleSavings',
+  SingleSavingsWithdrawal: 'SingleSavingsWithdrawal',
+  DuoSavings: 'DuoSavings',
+  DuoSavingsParticipant: 'DuoSavingsParticipant',
+  DuoSavingsInvite: 'DuoSavingsInvite',
+  DuoSavingsWithdrawalRequest: 'DuoSavingsWithdrawalRequest',
+  FamilySavings: 'FamilySavings',
+  FamilySavingsParticipant: 'FamilySavingsParticipant',
+  FamilySavingsInvite: 'FamilySavingsInvite',
+  FamilySavingsWithdrawalRequest: 'FamilySavingsWithdrawalRequest',
+  Report: 'Report',
+  Conversation: 'Conversation',
+  Message: 'Message'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +82,256 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AdminScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  email: 'email',
+  password: 'password',
+  role: 'role',
+  isEmailVerified: 'isEmailVerified',
+  emailVerificationCode: 'emailVerificationCode',
+  emailCodeExpiry: 'emailCodeExpiry',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof AdminScalarFieldEnum]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  firstname: 'firstname',
+  lastname: 'lastname',
+  username: 'username',
+  email: 'email',
+  password: 'password',
+  isEmailVerified: 'isEmailVerified',
+  role: 'role',
+  emailVerificationCode: 'emailVerificationCode',
+  emailCodeExpiry: 'emailCodeExpiry',
+  passwordResetCode: 'passwordResetCode',
+  passwordResetExpiry: 'passwordResetExpiry',
+  isDeleted: 'isDeleted',
+  deleteRequestedAt: 'deleteRequestedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SingleSavingsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  firstname: 'firstname',
+  lastname: 'lastname',
+  username: 'username',
+  planType: 'planType',
+  amountSaved: 'amountSaved',
+  interestRate: 'interestRate',
+  expectedInterest: 'expectedInterest',
+  totalPayout: 'totalPayout',
+  startDate: 'startDate',
+  maturityDate: 'maturityDate',
+  status: 'status',
+  lastCompoundedAt: 'lastCompoundedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SingleSavingsScalarFieldEnum = (typeof SingleSavingsScalarFieldEnum)[keyof typeof SingleSavingsScalarFieldEnum]
+
+
+export const SingleSavingsWithdrawalScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  savingsPlanId: 'savingsPlanId',
+  amount: 'amount',
+  WalletType: 'WalletType',
+  walletAddress: 'walletAddress',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SingleSavingsWithdrawalScalarFieldEnum = (typeof SingleSavingsWithdrawalScalarFieldEnum)[keyof typeof SingleSavingsWithdrawalScalarFieldEnum]
+
+
+export const DuoSavingsScalarFieldEnum = {
+  id: 'id',
+  createdById: 'createdById',
+  amountSaved: 'amountSaved',
+  interestRate: 'interestRate',
+  expectedInterest: 'expectedInterest',
+  totalPayout: 'totalPayout',
+  startDate: 'startDate',
+  maturityDate: 'maturityDate',
+  status: 'status',
+  lastCompoundedAt: 'lastCompoundedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DuoSavingsScalarFieldEnum = (typeof DuoSavingsScalarFieldEnum)[keyof typeof DuoSavingsScalarFieldEnum]
+
+
+export const DuoSavingsParticipantScalarFieldEnum = {
+  id: 'id',
+  duoSavingsId: 'duoSavingsId',
+  userId: 'userId',
+  contribution: 'contribution',
+  joinedAt: 'joinedAt'
+} as const
+
+export type DuoSavingsParticipantScalarFieldEnum = (typeof DuoSavingsParticipantScalarFieldEnum)[keyof typeof DuoSavingsParticipantScalarFieldEnum]
+
+
+export const DuoSavingsInviteScalarFieldEnum = {
+  id: 'id',
+  duoSavingsId: 'duoSavingsId',
+  invitedUserId: 'invitedUserId',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type DuoSavingsInviteScalarFieldEnum = (typeof DuoSavingsInviteScalarFieldEnum)[keyof typeof DuoSavingsInviteScalarFieldEnum]
+
+
+export const DuoSavingsWithdrawalRequestScalarFieldEnum = {
+  id: 'id',
+  duoSavingsId: 'duoSavingsId',
+  requestedById: 'requestedById',
+  amount: 'amount',
+  WalletType: 'WalletType',
+  walletAddress: 'walletAddress',
+  creatorApproved: 'creatorApproved',
+  partnerApproved: 'partnerApproved',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DuoSavingsWithdrawalRequestScalarFieldEnum = (typeof DuoSavingsWithdrawalRequestScalarFieldEnum)[keyof typeof DuoSavingsWithdrawalRequestScalarFieldEnum]
+
+
+export const FamilySavingsScalarFieldEnum = {
+  id: 'id',
+  createdById: 'createdById',
+  amountSaved: 'amountSaved',
+  interestRate: 'interestRate',
+  expectedInterest: 'expectedInterest',
+  totalPayout: 'totalPayout',
+  startDate: 'startDate',
+  maturityDate: 'maturityDate',
+  status: 'status',
+  lastCompoundedAt: 'lastCompoundedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilySavingsScalarFieldEnum = (typeof FamilySavingsScalarFieldEnum)[keyof typeof FamilySavingsScalarFieldEnum]
+
+
+export const FamilySavingsParticipantScalarFieldEnum = {
+  id: 'id',
+  familySavingsId: 'familySavingsId',
+  userId: 'userId',
+  contribution: 'contribution',
+  joinedAt: 'joinedAt'
+} as const
+
+export type FamilySavingsParticipantScalarFieldEnum = (typeof FamilySavingsParticipantScalarFieldEnum)[keyof typeof FamilySavingsParticipantScalarFieldEnum]
+
+
+export const FamilySavingsInviteScalarFieldEnum = {
+  id: 'id',
+  familySavingsId: 'familySavingsId',
+  invitedUserId: 'invitedUserId',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type FamilySavingsInviteScalarFieldEnum = (typeof FamilySavingsInviteScalarFieldEnum)[keyof typeof FamilySavingsInviteScalarFieldEnum]
+
+
+export const FamilySavingsWithdrawalRequestScalarFieldEnum = {
+  id: 'id',
+  familySavingsId: 'familySavingsId',
+  requestedById: 'requestedById',
+  amount: 'amount',
+  WalletType: 'WalletType',
+  walletAddress: 'walletAddress',
+  creatorApproved: 'creatorApproved',
+  partnerApproved: 'partnerApproved',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilySavingsWithdrawalRequestScalarFieldEnum = (typeof FamilySavingsWithdrawalRequestScalarFieldEnum)[keyof typeof FamilySavingsWithdrawalRequestScalarFieldEnum]
+
+
+export const ReportScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  category: 'category',
+  subject: 'subject',
+  description: 'description',
+  status: 'status',
+  adminResponse: 'adminResponse',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderType: 'senderType',
+  message: 'message',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

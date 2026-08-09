@@ -17,4 +17,78 @@ import * as Prisma from './internal/prismaNamespaceBrowser.ts'
 export { Prisma }
 export * as $Enums from './enums.ts'
 export * from './enums.ts';
-
+/**
+ * Model Admin
+ * 
+ */
+export type Admin = Prisma.AdminModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model SingleSavings
+ * 
+ */
+export type SingleSavings = Prisma.SingleSavingsModel
+/**
+ * Model SingleSavingsWithdrawal
+ * 
+ */
+export type SingleSavingsWithdrawal = Prisma.SingleSavingsWithdrawalModel
+/**
+ * Model DuoSavings
+ * 
+ */
+export type DuoSavings = Prisma.DuoSavingsModel
+/**
+ * Model DuoSavingsParticipant
+ * 
+ */
+export type DuoSavingsParticipant = Prisma.DuoSavingsParticipantModel
+/**
+ * Model DuoSavingsInvite
+ * 
+ */
+export type DuoSavingsInvite = Prisma.DuoSavingsInviteModel
+/**
+ * Model DuoSavingsWithdrawalRequest
+ * 
+ */
+export type DuoSavingsWithdrawalRequest = Prisma.DuoSavingsWithdrawalRequestModel
+/**
+ * Model FamilySavings
+ * 
+ */
+export type FamilySavings = Prisma.FamilySavingsModel
+/**
+ * Model FamilySavingsParticipant
+ * 
+ */
+export type FamilySavingsParticipant = Prisma.FamilySavingsParticipantModel
+/**
+ * Model FamilySavingsInvite
+ * 
+ */
+export type FamilySavingsInvite = Prisma.FamilySavingsInviteModel
+/**
+ * Model FamilySavingsWithdrawalRequest
+ * 
+ */
+export type FamilySavingsWithdrawalRequest = Prisma.FamilySavingsWithdrawalRequestModel
+/**
+ * Model Report
+ * 
+ */
+export type Report = Prisma.ReportModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel

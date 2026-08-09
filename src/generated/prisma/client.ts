@@ -31,8 +31,8 @@ export * from "./enums.ts"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Admins
+ * const admins = await prisma.admin.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -41,4 +41,78 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-
+/**
+ * Model Admin
+ * 
+ */
+export type Admin = Prisma.AdminModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model SingleSavings
+ * 
+ */
+export type SingleSavings = Prisma.SingleSavingsModel
+/**
+ * Model SingleSavingsWithdrawal
+ * 
+ */
+export type SingleSavingsWithdrawal = Prisma.SingleSavingsWithdrawalModel
+/**
+ * Model DuoSavings
+ * 
+ */
+export type DuoSavings = Prisma.DuoSavingsModel
+/**
+ * Model DuoSavingsParticipant
+ * 
+ */
+export type DuoSavingsParticipant = Prisma.DuoSavingsParticipantModel
+/**
+ * Model DuoSavingsInvite
+ * 
+ */
+export type DuoSavingsInvite = Prisma.DuoSavingsInviteModel
+/**
+ * Model DuoSavingsWithdrawalRequest
+ * 
+ */
+export type DuoSavingsWithdrawalRequest = Prisma.DuoSavingsWithdrawalRequestModel
+/**
+ * Model FamilySavings
+ * 
+ */
+export type FamilySavings = Prisma.FamilySavingsModel
+/**
+ * Model FamilySavingsParticipant
+ * 
+ */
+export type FamilySavingsParticipant = Prisma.FamilySavingsParticipantModel
+/**
+ * Model FamilySavingsInvite
+ * 
+ */
+export type FamilySavingsInvite = Prisma.FamilySavingsInviteModel
+/**
+ * Model FamilySavingsWithdrawalRequest
+ * 
+ */
+export type FamilySavingsWithdrawalRequest = Prisma.FamilySavingsWithdrawalRequestModel
+/**
+ * Model Report
+ * 
+ */
+export type Report = Prisma.ReportModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel

@@ -9,7 +9,146 @@
 * 🟢 You can import this file directly.
 */
 
+export const AdminRole = {
+  ADMIN: 'ADMIN'
+} as const
+
+export type AdminRole = (typeof AdminRole)[keyof typeof AdminRole]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const Role = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+} as const
+
+export type Role = (typeof Role)[keyof typeof Role]
+
+
+export const PlanType = {
+  SINGLE: 'SINGLE'
+} as const
+
+export type PlanType = (typeof PlanType)[keyof typeof PlanType]
+
+
+export const SavingsStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  MATURED: 'MATURED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type SavingsStatus = (typeof SavingsStatus)[keyof typeof SavingsStatus]
+
+
+export const WithdrawalStatus = {
+  SUCCESSFUL: 'SUCCESSFUL'
+} as const
+
+export type WithdrawalStatus = (typeof WithdrawalStatus)[keyof typeof WithdrawalStatus]
+
+
+export const DuoInviteStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type DuoInviteStatus = (typeof DuoInviteStatus)[keyof typeof DuoInviteStatus]
+
+
+export const DuoWithdrawalRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  EXECUTED: 'EXECUTED'
+} as const
+
+export type DuoWithdrawalRequestStatus = (typeof DuoWithdrawalRequestStatus)[keyof typeof DuoWithdrawalRequestStatus]
+
+
+export const DuoSavingsStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  MATURED: 'MATURED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type DuoSavingsStatus = (typeof DuoSavingsStatus)[keyof typeof DuoSavingsStatus]
+
+
+export const FamilyInviteStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type FamilyInviteStatus = (typeof FamilyInviteStatus)[keyof typeof FamilyInviteStatus]
+
+
+export const FamilyWithdrawalRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  EXECUTED: 'EXECUTED'
+} as const
+
+export type FamilyWithdrawalRequestStatus = (typeof FamilyWithdrawalRequestStatus)[keyof typeof FamilyWithdrawalRequestStatus]
+
+
+export const FamilySavingsStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  MATURED: 'MATURED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type FamilySavingsStatus = (typeof FamilySavingsStatus)[keyof typeof FamilySavingsStatus]
+
+
+export const WalletType = {
+  BITCOIN: 'BITCOIN',
+  ETHEREUM: 'ETHEREUM'
+} as const
+
+export type WalletType = (typeof WalletType)[keyof typeof WalletType]
+
+
+export const ReportCategory = {
+  ACCOUNT: 'ACCOUNT',
+  PAYMENT: 'PAYMENT',
+  SINGLE_SAVINGS: 'SINGLE_SAVINGS',
+  DUO_SAVINGS: 'DUO_SAVINGS',
+  FAMILY_SAVINGS: 'FAMILY_SAVINGS',
+  WITHDRAWAL: 'WITHDRAWAL',
+  SECURITY: 'SECURITY',
+  OTHER: 'OTHER'
+} as const
+
+export type ReportCategory = (typeof ReportCategory)[keyof typeof ReportCategory]
+
+
+export const ReportStatus = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+} as const
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+
+export const SenderType = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+} as const
+
+export type SenderType = (typeof SenderType)[keyof typeof SenderType]
+
+
+export const ConversationStatus = {
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED'
+} as const
+
+export type ConversationStatus = (typeof ConversationStatus)[keyof typeof ConversationStatus]
