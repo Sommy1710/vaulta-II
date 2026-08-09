@@ -27,17 +27,25 @@ const server = createServer(app);
 
 export const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://vaulta-frontend.vercel.app'
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
 });
 
-
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://vaulta-frontend.vercel.app'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(compression());
 app.use(helmet());
