@@ -157,7 +157,8 @@ export const authenticateUser = asyncHandler(async(req, res) => {
   res.cookie("authentication", token, {
     httpOnly: true,
     secure: config.environment === 'production',
-    sameSite: 'lax',
+    //sameSite: 'lax',
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return res.status(200).json({success: true, message: "user successfully logged in"});
