@@ -52,14 +52,16 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(logger());
-app.use(
-    cookieParser({
-        httpOnly: true,
-        secure: config.environment === 'production',
-        sameSite: 'strict',
-        maxAge: getSecondsFromNow(config.jwt.expiration)
-    })
-)
+app.use(cookieParser());
+/*app.use(
+  cookieParser({
+    httpOnly: true,
+    secure: config.environment === 'production',
+    sameSite: 'strict',
+    maxAge: 7 *24 * 60 * 60 * 1000,
+    //maxAge: getSecondsFromNow(config.jwt.expiration)
+  })
+)*/
 
 app.get('/health', (req, res) => {
     res.status(200).json({

@@ -158,7 +158,7 @@ export const authenticateUser = asyncHandler(async(req, res) => {
     httpOnly: true,
     secure: config.environment === 'production',
     sameSite: 'lax',
-    maxAge: Number(config.jwt.expiration) * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return res.status(200).json({success: true, message: "user successfully logged in"});
 
