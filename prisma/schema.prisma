@@ -74,6 +74,9 @@ model User {
   familyWithdrawalRequests  FamilySavingsWithdrawalRequest[]
   reports                   Report[]
 
+  duoSavingsDeposits    DuoSavingsDeposit[]
+  familySavingsDeposits FamilySavingsDeposit[]
+
   conversations Conversation[]
   
 
@@ -99,10 +102,13 @@ enum SavingsStatus {
   ACTIVE
   MATURED
   WITHDRAWN
+  REJECTED
 }
 
 enum WithdrawalStatus {
+  PENDING
   SUCCESSFUL
+  REJECTED
 }
 
 model SingleSavings {
@@ -125,7 +131,7 @@ model SingleSavings {
   startDate    DateTime @default(now())
   maturityDate DateTime
 
-  status SavingsStatus @default(ACTIVE)
+  status SavingsStatus @default(PENDING)
 
   lastCompoundedAt DateTime?
 
@@ -151,7 +157,7 @@ model SingleSavingsWithdrawal {
   WalletType    WalletType?
   walletAddress String?
 
-  status WithdrawalStatus @default(SUCCESSFUL)
+  status WithdrawalStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,6 +187,13 @@ enum DuoSavingsStatus {
   ACTIVE
   MATURED
   WITHDRAWN
+  REJECTED
+}
+
+enum DuoDepositStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model DuoSavings {
@@ -202,7 +215,7 @@ model DuoSavings {
 
   maturityDate DateTime
 
-  status DuoSavingsStatus @default(ACTIVE)
+  status DuoSavingsStatus @default(PENDING)
 
   lastCompoundedAt DateTime?
 
@@ -211,6 +224,8 @@ model DuoSavings {
   invites DuoSavingsInvite[]
 
   withdrawalRequests DuoSavingsWithdrawalRequest[]
+
+  deposits DuoSavingsDeposit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -281,6 +296,25 @@ model DuoSavingsWithdrawalRequest {
   @@map("duo_savings_withdrawal_requests")
 }
 
+model DuoSavingsDeposit {
+  id String @id @default(cuid())
+
+  duoSavingsId String
+  duoSavings   DuoSavings @relation(fields: [duoSavingsId], references: [id], onDelete: Cascade)
+
+  depositedById String
+  depositedBy   User   @relation(fields: [depositedById], references: [id], onDelete: Cascade)
+
+  amount Float
+
+  status DuoDepositStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("duo_savings_deposits")
+}
+
 // ======================================================
 // FAMILY SAVINGS SCHEMA
 // ======================================================
@@ -303,6 +337,13 @@ enum FamilySavingsStatus {
   ACTIVE
   MATURED
   WITHDRAWN
+  REJECTED
+}
+
+enum FamilyDepositStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum WalletType {
@@ -329,7 +370,7 @@ model FamilySavings {
 
   maturityDate DateTime
 
-  status FamilySavingsStatus @default(ACTIVE)
+  status FamilySavingsStatus @default(PENDING)
 
   lastCompoundedAt DateTime?
 
@@ -338,6 +379,8 @@ model FamilySavings {
   invites FamilySavingsInvite[]
 
   withdrawalRequests FamilySavingsWithdrawalRequest[]
+
+  deposits FamilySavingsDeposit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -406,6 +449,25 @@ model FamilySavingsWithdrawalRequest {
   updatedAt DateTime @updatedAt
 
   @@map("family_savings_withdrawal_requests")
+}
+
+model FamilySavingsDeposit {
+  id String @id @default(cuid())
+
+  familySavingsId String
+  familySavings   FamilySavings @relation(fields: [familySavingsId], references: [id], onDelete: Cascade)
+
+  depositedById String
+  depositedBy   User   @relation(fields: [depositedById], references: [id], onDelete: Cascade)
+
+  amount Float
+
+  status FamilyDepositStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("family_savings_deposits")
 }
 
 // ======================================================

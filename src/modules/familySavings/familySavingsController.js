@@ -117,6 +117,7 @@ export const createFamilySavings = asyncHandler(async (req, res) => {
           totalPayout,
 
           maturityDate,
+          status: "PENDING",
 
           participants: {
             create: {
@@ -148,7 +149,7 @@ export const createFamilySavings = asyncHandler(async (req, res) => {
   return res.status(201).json({
   success: true,
   message:
-    "Family savings plan created successfully. Please make payment using any of the available payment methods below to activate your savings plan.",
+    "Family savings plan created and pending admin approval. Please make payment using any of the available payment methods below; your plan will be activated once an admin approves it.",
   data: {
     familySavings,
 
@@ -523,63 +524,21 @@ export const depositToFamilySavings = asyncHandler(
       });
     }
 
-    const updatedSavings =
-      await prisma.$transaction(async (tx) => {
-        // Update participant contribution
-        await tx.familySavingsParticipant.update({
-          where: {
-            id: participant.id,
-          },
-          data: {
-            contribution: {
-              increment: amount,
-            },
-          },
-        });
-
-        const newAmountSaved =
-          familySavings.amountSaved + amount;
-
-        const expectedInterest =
-          (newAmountSaved *
-            familySavings.interestRate) /
-          100;
-
-        const totalPayout =
-          newAmountSaved + expectedInterest;
-
-        return tx.familySavings.update({
-          where: {
-            id: familySavingsId,
-          },
-          data: {
-            amountSaved: newAmountSaved,
-            expectedInterest,
-            totalPayout,
-          },
-          include: {
-            participants: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    firstname: true,
-                    lastname: true,
-                    username: true,
-                    email: true,
-                  },
-                },
-              },
-            },
-          },
-        });
-      });
+    // Balance is only adjusted once an admin approves the deposit
+    const deposit = await prisma.familySavingsDeposit.create({
+      data: {
+        familySavingsId,
+        depositedById: userId,
+        amount,
+        status: "PENDING",
+      },
+    });
 
     return res.status(200).json({
       success: true,
-      message: "Deposit successful, please make your deposit with any of the following payment methods",
+      message: "Deposit request submitted and is pending admin approval. Please make your deposit with any of the following payment methods",
       data: {
-        updatedSavings,
+        deposit,
         paymentDetails: {
           bankTransfer: {
             status: "UNAVAILABLE",
@@ -1193,5 +1152,69 @@ export const getFamilySavingsWithdrawalHistory =
       success: true,
       count: withdrawals.length,
       data: withdrawals,
+    });
+  });
+
+export const getFamilySavingsDepositHistory =
+  asyncHandler(async (req, res) => {
+    const { familySavingsId } = req.params;
+
+    const userId =
+      req.user?.id || req.user?._id;
+
+    // Verify user is a participant
+    const participant =
+      await prisma.familySavingsParticipant.findFirst({
+        where: {
+          familySavingsId,
+          userId,
+        },
+      });
+
+    if (!participant) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Only participants can view deposit history",
+      });
+    }
+
+    const deposits =
+      await prisma.familySavingsDeposit.findMany({
+        where: {
+          familySavingsId,
+        },
+
+        include: {
+          depositedBy: {
+            select: {
+              id: true,
+              firstname: true,
+              lastname: true,
+              username: true,
+              email: true,
+            },
+          },
+
+          familySavings: {
+            select: {
+              id: true,
+              amountSaved: true,
+              totalPayout: true,
+              expectedInterest: true,
+              status: true,
+            },
+          },
+        },
+
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+    return res.status(200).json({
+      success: true,
+      count: deposits.length,
+      data: deposits,
     });
   });

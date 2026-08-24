@@ -40,7 +40,7 @@ export const createSingleSavingsPlan = asyncHandler(async (req, res) => {
 
     res.status(201).json({
         success: true,
-        message: "Single savings plan created successfully. Please make payment with any of the following payment methods to activate your savings plan.",
+        message: "Single savings plan created and pending admin approval. Please make payment with any of the following payment methods; your plan will be activated once an admin approves it.",
         data: {
             savingsPlan,
             paymentDetails: {
@@ -184,6 +184,21 @@ export const withdrawSingleSavings = asyncHandler(async (req, res) => {
         });
     }
 
+    if (plan.status !== "ACTIVE" && plan.status !== "MATURED") {
+        return res.status(400).json({
+            success: false,
+            message: "Plan is not active",
+        });
+    }
+
+    if (plan.status === "ACTIVE" && new Date() < plan.maturityDate) {
+        return res.status(400).json({
+            success: false,
+            message:
+                "Savings plan has not matured yet. Withdrawals are not allowed until maturity.",
+        });
+    }
+
     if (!amount || amount <= 0) {
         return res.status(400).json({
             success: false,
@@ -191,7 +206,7 @@ export const withdrawSingleSavings = asyncHandler(async (req, res) => {
         });
     }
     if (
-    !WalletType || 
+    !WalletType ||
     !["BITCOIN", "ETHEREUM"].includes(WalletType)
   ) {
     return res.status(400).json({
@@ -208,93 +223,36 @@ export const withdrawSingleSavings = asyncHandler(async (req, res) => {
     });
   }
 
-    // NOT MATURED
-    if (plan.status !== "MATURED") {
-        if (amount > plan.amountSaved) {
-            return res.status(400).json({
-                success: false,
-                message: "Withdrawal amount cannot exceed amount saved",
-            });
-        }
-
-        const newAmountSaved =
-        plan.amountSaved - amount;
-
-        const newInterest = 
-        (newAmountSaved * plan.interestRate) / 100;
-
-        const newTotalPayout = 
-        newAmountSaved + newInterest;
-
-        await prisma.singleSavings.update({
-            where: {
-                id: plan.id,
-            },
-            data: {
-                amountSaved: newAmountSaved,
-                expectedInterest: newInterest,
-                totalPayout: newTotalPayout,
-            },
-        });
-
-        // Save withdrawal history
-        await prisma.singleSavingsWithdrawal.create({
-            data: {
-                userId,
-                savingsPlanId: plan.id,
-                amount,
-                WalletType,
-                walletAddress
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: "Withdrawal successful, awaiting approval",
-            withdrawn: amount,
-            walletType: WalletType,
-            walletAddress: walletAddress,
-            remainingBalance: plan.amountSaved,
-        });
-    }
-
-    // MATURED
-    if (amount > plan.totalPayout) {
+    // caps at total payout once interest has been credited (MATURED), otherwise at principal saved
+    const availableBalance = plan.status === "MATURED" ? plan.totalPayout : plan.amountSaved;
+    if (amount > availableBalance) {
         return res.status(400).json({
             success: false,
-            message: "Withdrawal amount cannot exceed available payout",
+            message:
+                plan.status === "MATURED"
+                    ? "Withdrawal amount cannot exceed available payout"
+                    : "Withdrawal amount cannot exceed amount saved",
         });
     }
 
-    const remainingBalance =
-    plan.totalPayout - amount;
-
-    await prisma.singleSavings.update({
-        where: {
-            id: plan.id,
-        },
-        data: {
-            totalPayout: remainingBalance,
-            ...(remainingBalance <= 0 && {
-                status: "WITHDRAWN",
-            }),
-        },
-    });
-
-    // Save withdrawal history
+    // Save withdrawal request — balance is only adjusted once an admin approves it
     await prisma.singleSavingsWithdrawal.create({
         data: {
             userId,
             savingsPlanId: plan.id,
             amount,
+            WalletType,
+            walletAddress,
+            status: "PENDING",
         },
     });
 
     return res.status(200).json({
         success: true,
-        message: "Withdrawal successful",
-        withdrawn: amount,
-        remainingBalance,
+        message: "Withdrawal request submitted and is pending admin approval.",
+        requested: amount,
+        walletType: WalletType,
+        walletAddress: walletAddress,
     });
 });
 

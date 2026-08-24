@@ -6,6 +6,7 @@ import { createDuoSavings, inviteUserToDuoSavings, getMyDuoSavingsInvites,
     approveDuoSavingsWithdrawal,
     rejectDuoSavingsWithdrawal,
     getPendingWithdrawalApprovals, getDuoSavingsWithdrawalHistory,
+    getDuoSavingsDepositHistory,
     getMyDuoPlans } from './duoSavingsController.js';
 const router = Router();
 
@@ -22,6 +23,7 @@ router.get("/get-pending-duo-savings-withdrawal-approvals", authMiddleware, getP
 router.patch("/approve-duo-savings-withdrawal/:requestId", authMiddleware, approveDuoSavingsWithdrawal);
 router.patch("/reject-duo-savings-withdrawal/:requestId", authMiddleware, rejectDuoSavingsWithdrawal);
 router.get("/duo-savings-withdrawaal-history/:duoSavingsId", authMiddleware, getDuoSavingsWithdrawalHistory );
+router.get("/duo-savings-deposit-history/:duoSavingsId", authMiddleware, getDuoSavingsDepositHistory);
 
 
 export const duoSavingsRouter = router;
