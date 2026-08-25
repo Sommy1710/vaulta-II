@@ -22,10 +22,7 @@ export const createSingleSavingsPlan = async (
   const totalPayout = amount + expectedInterest;
 
   const maturityDate = new Date();
-  maturityDate.setMinutes(maturityDate.getMinutes() + 2);
-
-  /*const maturityDate = new Date();
-  maturityDate.setDate(maturityDate.getDate() + 21);*/
+  maturityDate.setDate(maturityDate.getDate() + 21);
 
   return await prisma.singleSavings.create({
     data: {
@@ -41,6 +38,7 @@ export const createSingleSavingsPlan = async (
       totalPayout,
 
       maturityDate,
+      status: "PENDING",
     },
   });
 };

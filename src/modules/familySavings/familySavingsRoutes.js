@@ -5,7 +5,8 @@ import { getMyFamilyPlans, createFamilySavings, inviteUserToFamilySavings, getMy
     requestFamilySavingsWithdrawal,
     approveFamilySavingsWithdrawal,
     rejectFamilySavingsWithdrawal,
-    getPendingWithdrawalApprovals, getFamilySavingsWithdrawalHistory } from './familySavingsController.js';
+    getPendingWithdrawalApprovals, getFamilySavingsWithdrawalHistory,
+    getFamilySavingsDepositHistory } from './familySavingsController.js';
 const router = Router();
 
 router.get("/my-plans", authMiddleware, getMyFamilyPlans);
@@ -21,6 +22,7 @@ router.get("/get-pending-family-savings-withdrawal-approvals", authMiddleware, g
 router.patch("/approve-family-savings-withdrawal/:requestId", authMiddleware, approveFamilySavingsWithdrawal);
 router.patch("/reject-family-savings-withdrawal/:requestId", authMiddleware, rejectFamilySavingsWithdrawal);
 router.get("/family-savings-withdrawal-history/:familySavingsId", authMiddleware, getFamilySavingsWithdrawalHistory);
+router.get("/family-savings-deposit-history/:familySavingsId", authMiddleware, getFamilySavingsDepositHistory);
 
 
 export const familySavingsRouter = router;
