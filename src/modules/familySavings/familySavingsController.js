@@ -641,52 +641,105 @@ export const getFamilySavingsTotalYield = asyncHandler(
 );
 
 export const getFamilySavingsHistory = asyncHandler(
-  async (req, res) => {
-    const { familySavingsId } = req.params;
+    async (req, res) => {
+        const { familySavingsId } = req.params;
 
-    const userId =
-      req.user?.id || req.user?._id;
+        const userId = req.user?.id || req.user?._id;
 
-    const plan =
-      await prisma.familySavings.findFirst({
-        where: {
-          id: familySavingsId,
-          participants: {
-            some: {
-              userId,
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        // Find the Family Savings plan
+        const plan = await prisma.familySavings.findUnique({
+            where: {
+                id: familySavingsId,
             },
-          },
-        },
-        include: {
-          participants: {
+
             include: {
-              user: {
-                select: {
-                  id: true,
-                  firstname: true,
-                  lastname: true,
-                  username: true,
-                  email: true,
+                // Plan creator
+                createdBy: {
+                    select: {
+                        id: true,
+                        firstname: true,
+                        lastname: true,
+                        username: true,
+                        email: true,
+                    },
                 },
-              },
+
+                // Participants
+                participants: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                firstname: true,
+                                lastname: true,
+                                username: true,
+                                email: true,
+                            },
+                        },
+                    },
+                },
+
+                // Invites
+                invites: true,
+
+                // Withdrawals
+                withdrawalRequests: true,
+
+                // Deposits
+                deposits: {
+                    include: {
+                        depositedBy: {
+                            select: {
+                                id: true,
+                                firstname: true,
+                                lastname: true,
+                                username: true,
+                            },
+                        },
+                    },
+                },
             },
-          },
-        },
-      });
+        });
 
-    if (!plan) {
-      return res.status(404).json({
-        success: false,
-        message:
-          "Family savings plan not found",
-      });
+        // Plan doesn't exist
+        if (!plan) {
+            return res.status(404).json({
+                success: false,
+                message: "Family savings plan not found",
+            });
+        }
+
+        // Check if logged-in user is the creator
+        const isCreator =
+            plan.createdById.toString() === userId.toString();
+
+        // Check if logged-in user is a participant
+        const isParticipant = plan.participants.some(
+            (participant) =>
+                participant.userId.toString() === userId.toString()
+        );
+
+        // User is neither creator nor participant
+        if (!isCreator && !isParticipant) {
+            return res.status(403).json({
+                success: false,
+                message:
+                    "You are not authorized to access this Family savings plan",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: plan,
+        });
     }
-
-    return res.status(200).json({
-      success: true,
-      data: plan,
-    });
-  }
 );
 
 export const requestFamilySavingsWithdrawal =

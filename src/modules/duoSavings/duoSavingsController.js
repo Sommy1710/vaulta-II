@@ -523,7 +523,99 @@ export const depositToDuoSavings = asyncHandler(
   }
 );
 
+export const getDuoSavingsHistory = asyncHandler(async (req, res) => {
+    const { duoSavingsId } = req.params;
 
+    const userId = req.user?.id || req.user?._id;
+
+    if (!userId) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
+
+    const plan = await prisma.duoSavings.findUnique({
+        where: {
+            id: duoSavingsId,
+        },
+
+        include: {
+            createdBy: {
+                select: {
+                    id: true,
+                    firstname: true,
+                    lastname: true,
+                    username: true,
+                    email: true,
+                },
+            },
+
+            participants: {
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            firstname: true,
+                            lastname: true,
+                            username: true,
+                            email: true,
+                        },
+                    },
+                },
+            },
+
+            invites: true,
+
+            withdrawalRequests: true,
+
+            deposits: {
+                include: {
+                    depositedBy: {
+                        select: {
+                            id: true,
+                            firstname: true,
+                            lastname: true,
+                            username: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    // Plan does not exist
+    if (!plan) {
+        return res.status(404).json({
+            success: false,
+            message: "Duo savings plan not found",
+        });
+    }
+
+    // Check whether user is creator
+    const isCreator =
+        plan.createdById.toString() === userId.toString();
+
+    // Check whether user is participant
+    const isParticipant = plan.participants.some(
+        (participant) =>
+            participant.userId.toString() === userId.toString()
+    );
+
+    // User is neither creator nor participant
+    if (!isCreator && !isParticipant) {
+        return res.status(403).json({
+            success: false,
+            message:
+                "You are not authorized to access this Duo savings plan",
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: plan,
+    });
+});
 export const getDuoSavingsTotalYield = asyncHandler(
   async (req, res) => {
     const { planId } = req.params;
@@ -599,7 +691,7 @@ export const getDuoSavingsTotalYield = asyncHandler(
   }
 );
 
-export const getDuoSavingsHistory = asyncHandler(
+/*export const getDuoSavingsHistory = asyncHandler(
   async (req, res) => {
     const { duoSavingsId } = req.params;
 
@@ -646,7 +738,7 @@ export const getDuoSavingsHistory = asyncHandler(
       data: plan,
     });
   }
-);
+);*/
 
 export const requestDuoSavingsWithdrawal =
 asyncHandler(async (req, res) => {
