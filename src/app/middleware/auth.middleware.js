@@ -1,9 +1,10 @@
 import {UnauthenticatedError} from "../../lib/error-definitions.js";
 import { verifyAuthenticationToken } from "../providers/jwt.provider.js";
+import { getBearerToken } from "../../lib/util.js";
 
 export default function authMiddleware(req, res, next) {
     try {
-        const token = req.cookies.authentication;
+        const token = getBearerToken(req);
     const decoded = verifyAuthenticationToken(token);
     req.user = decoded;
     next();

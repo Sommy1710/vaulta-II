@@ -15,3 +15,9 @@ export const getSecondsFromNow = (seconds) => {
     currentTime.setSeconds(currentTime.getSeconds() + seconds);
     return currentTime.getTime() / 1000;
 };
+
+export const getBearerToken = (req) => {
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith('Bearer ')) return null;
+    return header.slice('Bearer '.length).trim() || null;
+};

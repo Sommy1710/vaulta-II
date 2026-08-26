@@ -1,5 +1,4 @@
 import {asyncHandler} from '../../lib/util.js';
-import config from '../../config/app.config.js';
 import * as authService from './auth.service.js';
 import {Validator} from '../../lib/validator.js';
 import { CreateAdminRequest, UpdateAdminRequest } from './create-admin.request.js';
@@ -40,13 +39,7 @@ export const authenticateAdmin = asyncHandler(async(req, res) => {
     }
 
     const token = await authService.authenticateAdmin(value, req);
-    res.cookie("authentication", token, {
-        httpOnly: true,
-        secure: config.environment === 'production',
-        sameSite: config.environment === 'production' ? 'none' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    return res.status(200).json({success: true, message: "admin successfully logged in"});
+    return res.status(200).json({success: true, message: "admin successfully logged in", data: {token}});
 
 });
 
