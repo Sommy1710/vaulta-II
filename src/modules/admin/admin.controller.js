@@ -813,6 +813,19 @@ export const approveSavingsDeposit = asyncHandler(async (req, res) => {
                     },
                 });
 
+            // Credit the depositor's individual contribution
+            await tx.duoSavingsParticipant.update({
+                where: {
+                    duoSavingsId_userId: {
+                        duoSavingsId: deposit.duoSavingsId,
+                        userId: deposit.depositedById,
+                    },
+                },
+                data: {
+                    contribution: { increment: deposit.amount },
+                },
+            });
+
             // Update savings plan
             savingsPlan =
                 await tx.duoSavings.update({
@@ -862,6 +875,19 @@ export const approveSavingsDeposit = asyncHandler(async (req, res) => {
                         status: "APPROVED",
                     },
                 });
+
+            // Credit the depositor's individual contribution
+            await tx.familySavingsParticipant.update({
+                where: {
+                    familySavingsId_userId: {
+                        familySavingsId: deposit.familySavingsId,
+                        userId: deposit.depositedById,
+                    },
+                },
+                data: {
+                    contribution: { increment: deposit.amount },
+                },
+            });
 
             // Update savings plan
             savingsPlan =
@@ -1110,6 +1136,200 @@ export const getPendingSavingsDeposits = asyncHandler(async (req, res) => {
         message: "Pending savings deposits retrieved successfully.",
         count: deposits.length,
         data: deposits,
+    });
+});
+
+export const getPendingSingleSavingsWithdrawals = asyncHandler(async (req, res) => {
+    const requester = req.admin;
+
+    // Make sure requester is an admin
+    if (!requester || requester.role !== "ADMIN") {
+        return res.status(403).json({
+            success: false,
+            message: "You are not authorized to perform this action",
+        });
+    }
+
+    const withdrawals = await prisma.singleSavingsWithdrawal.findMany({
+        where: {
+            status: "PENDING",
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    firstname: true,
+                    lastname: true,
+                    username: true,
+                    email: true,
+                },
+            },
+            savingsPlan: {
+                select: {
+                    id: true,
+                    amountSaved: true,
+                    interestRate: true,
+                    expectedInterest: true,
+                    totalPayout: true,
+                    status: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Pending single savings withdrawals retrieved successfully.",
+        count: withdrawals.length,
+        data: withdrawals,
+    });
+});
+
+export const approveSingleSavingsWithdrawal = asyncHandler(async (req, res) => {
+    const requester = req.admin;
+
+    // Make sure requester is an admin
+    if (!requester || requester.role !== "ADMIN") {
+        return res.status(403).json({
+            success: false,
+            message: "You are not authorized to perform this action",
+        });
+    }
+
+    const { withdrawalId } = req.params;
+
+    if (!withdrawalId) {
+        return res.status(400).json({
+            success: false,
+            message: "Withdrawal ID is required",
+        });
+    }
+
+    const withdrawal = await prisma.singleSavingsWithdrawal.findUnique({
+        where: {
+            id: withdrawalId,
+        },
+        include: {
+            savingsPlan: true,
+        },
+    });
+
+    if (!withdrawal) {
+        return res.status(404).json({
+            success: false,
+            message: "Withdrawal not found",
+        });
+    }
+
+    if (withdrawal.status !== "PENDING") {
+        return res.status(400).json({
+            success: false,
+            message: `Withdrawal is already ${withdrawal.status.toLowerCase()}. Only pending withdrawals can be approved.`,
+        });
+    }
+
+    const plan = withdrawal.savingsPlan;
+
+    const result = await prisma.$transaction(async (tx) => {
+        let updatedPlan;
+
+        if (plan.status === "MATURED") {
+            const remainingBalance = plan.totalPayout - withdrawal.amount;
+
+            updatedPlan = await tx.singleSavings.update({
+                where: { id: plan.id },
+                data: {
+                    totalPayout: remainingBalance,
+                    ...(remainingBalance <= 0 && { status: "WITHDRAWN" }),
+                },
+            });
+        } else {
+            const newAmountSaved = plan.amountSaved - withdrawal.amount;
+            const newInterest = (newAmountSaved * plan.interestRate) / 100;
+            const newTotalPayout = newAmountSaved + newInterest;
+
+            updatedPlan = await tx.singleSavings.update({
+                where: { id: plan.id },
+                data: {
+                    amountSaved: newAmountSaved,
+                    expectedInterest: newInterest,
+                    totalPayout: newTotalPayout,
+                },
+            });
+        }
+
+        const approvedWithdrawal = await tx.singleSavingsWithdrawal.update({
+            where: { id: withdrawalId },
+            data: { status: "SUCCESSFUL" },
+        });
+
+        return { approvedWithdrawal, updatedPlan };
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Single savings withdrawal approved successfully.",
+        data: {
+            withdrawal: result.approvedWithdrawal,
+            savingsPlan: result.updatedPlan,
+        },
+    });
+});
+
+export const rejectSingleSavingsWithdrawal = asyncHandler(async (req, res) => {
+    const requester = req.admin;
+
+    // Make sure requester is an admin
+    if (!requester || requester.role !== "ADMIN") {
+        return res.status(403).json({
+            success: false,
+            message: "You are not authorized to perform this action",
+        });
+    }
+
+    const { withdrawalId } = req.params;
+
+    if (!withdrawalId) {
+        return res.status(400).json({
+            success: false,
+            message: "Withdrawal ID is required",
+        });
+    }
+
+    const withdrawal = await prisma.singleSavingsWithdrawal.findUnique({
+        where: {
+            id: withdrawalId,
+        },
+    });
+
+    if (!withdrawal) {
+        return res.status(404).json({
+            success: false,
+            message: "Withdrawal not found",
+        });
+    }
+
+    if (withdrawal.status !== "PENDING") {
+        return res.status(400).json({
+            success: false,
+            message: `Withdrawal is already ${withdrawal.status.toLowerCase()}. Only pending withdrawals can be rejected.`,
+        });
+    }
+
+    const rejectedWithdrawal = await prisma.singleSavingsWithdrawal.update({
+        where: { id: withdrawalId },
+        data: { status: "REJECTED" },
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Single savings withdrawal rejected successfully.",
+        data: {
+            withdrawal: rejectedWithdrawal,
+        },
     });
 });
 
