@@ -1,7 +1,8 @@
 import {Router} from 'express';
 import { createAdminAccount, authenticateAdmin, listAllUsersByAdmin, deleteUserByAdmin, listAllSavingsByAdmin,
      deleteSavingsByAdmin, getAllReportsByAdmin, respondToReport, deleteReport, getAllConversations, adminReply, getUserSavingsByAdmin,
-     approveSavingsPlan, rejectSavingsPlan,getAllPendingSavingsPlans, approveSavingsDeposit, rejectSavingsDeposit, getPendingSavingsDeposits,} from './admin.controller.js';
+     approveSavingsPlan, rejectSavingsPlan,getAllPendingSavingsPlans, approveSavingsDeposit, rejectSavingsDeposit, getPendingSavingsDeposits,
+     getPendingSingleSavingsWithdrawals, approveSingleSavingsWithdrawal, rejectSingleSavingsWithdrawal } from './admin.controller.js';
 import { adminLimiter } from './adminLimiter.js';
 import adminMiddleware from './../../app/middleware/admin.middleware.js';
 const router = Router();
@@ -25,5 +26,9 @@ router.get('/pending-savings-plans', adminMiddleware, getAllPendingSavingsPlans)
 router.patch('/approve-deposit/:depositId', adminMiddleware, approveSavingsDeposit);
 router.patch('/reject-deposit/:depositId', adminMiddleware, rejectSavingsDeposit);
 router.get('/pending-deposits', adminMiddleware, getPendingSavingsDeposits);
+
+router.get('/pending-single-savings-withdrawals', adminMiddleware, getPendingSingleSavingsWithdrawals);
+router.patch('/approve-single-savings-withdrawal/:withdrawalId', adminMiddleware, approveSingleSavingsWithdrawal);
+router.patch('/reject-single-savings-withdrawal/:withdrawalId', adminMiddleware, rejectSingleSavingsWithdrawal);
 
 export const adminRouter = router;

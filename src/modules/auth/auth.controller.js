@@ -10,7 +10,6 @@ import { ValidationError } from '../../lib/error-definitions.js';
 import {sendEmail} from '../../lib/emailService.js';
 import { deleteUserById } from './user.service.js';
 import * as userService from './user.service.js';
-import config from '../../config/app.config.js';
 import { UnauthorizedError, NotFoundError, UnauthenticatedError } from '../../lib/error-definitions.js';
 import {io} from "../../bootstrap/server.js";
 
@@ -154,14 +153,7 @@ export const authenticateUser = asyncHandler(async(req, res) => {
     });
   }
   const token = await authService.authenticateUser(value, req);
-  const isProd = config.environment === 'production';
-  res.cookie("authentication", token, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-  return res.status(200).json({success: true, message: "user successfully logged in"});
+  return res.status(200).json({success: true, message: "user successfully logged in", data: {token}});
 
 });
 
@@ -319,13 +311,6 @@ export const getDashboardSummary = asyncHandler(async (req, res) => {
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
-  const isProd = config.environment === 'production';
-  res.clearCookie('authentication', {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax'
-  });
-
   return res.status(200).json({ success: true, message: 'User successfully logged out' });
 });
 
