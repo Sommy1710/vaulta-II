@@ -234,7 +234,7 @@ export const inviteUserToFamilySavings = async (req, res) => {
     }
 
     // Ensure savings is not already full
-    if (familySavings.participants.length >= 2) {
+    if (familySavings.participants.length >= 5) {
       return res.status(400).json({
         success: false,
         message: "This family savings plan already has two participants",
