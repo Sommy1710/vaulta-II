@@ -38,7 +38,7 @@
     "start:prod": "node src/main.js",
     "start:dev": "nodemon src/main.js"
   },
-  "author": "Martin Somto",
+  "author": "fast guy",
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^3.1.14",
