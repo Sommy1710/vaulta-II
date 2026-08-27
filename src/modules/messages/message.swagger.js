@@ -192,7 +192,7 @@
  *                             format: date-time
  *
  *       401:
- *         description: User not authenticated.
+ *         description: User is not not authenticated.
  *
  *       500:
  *         description: Internal server error.
