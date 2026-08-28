@@ -740,7 +740,110 @@ export const getDuoSavingsTotalYield = asyncHandler(
   }
 );*/
 
-export const requestDuoSavingsWithdrawal =
+export const requestDuoSavingsWithdrawal = asyncHandler(
+  async (req, res) => {
+    const userId = req.user?.id || req.user?._id;
+
+    const { duoSavingsId } = req.params;
+    const { amount, WalletType, walletAddress } = req.body;
+
+    const plan = await prisma.duoSavings.findUnique({
+      where: {
+        id: duoSavingsId,
+      },
+      include: {
+        participants: true,
+      },
+    });
+
+    if (!plan) {
+      return res.status(404).json({
+        success: false,
+        message: "Savings plan not found",
+      });
+    }
+
+    if (
+      !WalletType ||
+      !["BITCOIN", "ETHEREUM"].includes(WalletType)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Wallet type must be BITCOIN or ETHEREUM",
+      });
+    }
+
+    if (!walletAddress) {
+      return res.status(400).json({
+        success: false,
+        message: "Wallet address is required",
+      });
+    }
+
+    const participant = plan.participants.find(
+      (p) => p.userId === userId
+    );
+
+    if (!participant) {
+      return res.status(403).json({
+        success: false,
+        message: "Only participants can request withdrawals",
+      });
+    }
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid withdrawal amount",
+      });
+    }
+
+    const availableBalance =
+      plan.status === "MATURED"
+        ? plan.totalPayout
+        : plan.amountSaved;
+
+    if (amount > availableBalance) {
+      return res.status(400).json({
+        success: false,
+        message: "Withdrawal amount exceeds available balance",
+      });
+    }
+
+    // Check how many participants are in the plan
+    const isOnlyParticipant = plan.participants.length === 1;
+
+    const withdrawal =
+      await prisma.duoSavingsWithdrawalRequest.create({
+        data: {
+          duoSavingsId,
+          requestedById: userId,
+          amount,
+
+          WalletType,
+          walletAddress,
+
+          // If only one participant exists,
+          // both approvals are automatically granted.
+          creatorApproved:
+            isOnlyParticipant || userId === plan.createdById,
+
+          partnerApproved:
+            isOnlyParticipant || userId !== plan.createdById,
+        },
+      });
+
+    return res.status(201).json({
+      success: true,
+      message: isOnlyParticipant
+        ? "Withdrawal request approved. You are the only participant."
+        : "Withdrawal request submitted. Waiting for second approval.",
+      data: withdrawal,
+    });
+  }
+);
+
+/*export const requestDuoSavingsWithdrawal =
 asyncHandler(async (req, res) => {
   const userId = req.user?.id || req.user?._id;
 
@@ -839,7 +942,7 @@ asyncHandler(async (req, res) => {
       "Withdrawal request submitted. Waiting for second approval.",
     data: withdrawal,
   });
-});
+});*/
 
 export const getPendingWithdrawalApprovals =
   asyncHandler(async (req, res) => {
