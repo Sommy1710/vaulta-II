@@ -7,7 +7,7 @@ import { adminLimiter } from './adminLimiter.js';
 import adminMiddleware from './../../app/middleware/admin.middleware.js';
 const router = Router();
 
-router.post('/register', createAdminAccount);
+router.post('/register', adminMiddleware, createAdminAccount);
 router.post('/login', adminLimiter, authenticateAdmin);
 router.get('/list-all-users', adminMiddleware, listAllUsersByAdmin);
 router.delete('/delete-user-by-admin/:userId', adminMiddleware, deleteUserByAdmin);
