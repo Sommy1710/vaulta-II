@@ -11,6 +11,15 @@ import {io} from "../../bootstrap/server.js";
 import { SendMessageRequest } from '../messages/send.message.request.js';
 
 export const createAdminAccount = asyncHandler(async(req, res) => {
+    const requester = req.admin;
+
+    if (!requester || requester.role !== "ADMIN") {
+        return res.status(403).json({
+            success: false,
+            message: "You are not authorized to perform this action",
+        });
+    }
+
     const validator = new Validator();
 
     const {value, errors} = validator.validate(CreateAdminRequest, req.body);
